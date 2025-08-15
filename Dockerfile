@@ -1,7 +1,7 @@
 # Gunakan PHP 7.4 FPM
 FROM php:7.4-fpm
 
-# Install system dependencies dan ekstensi PHP yang dibutuhkan Laravel 7
+# Install system dependencies dan ekstensi PHP
 RUN apt-get update && apt-get install -y \
     git \
     unzip \
@@ -15,19 +15,19 @@ RUN apt-get update && apt-get install -y \
 # Set working directory
 WORKDIR /var/www
 
+# Install Composer secara global
+RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+
 # Salin file composer
 COPY composer.json composer.lock ./
 
-# Install Composer
-RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
-
-# Install PHP dependencies Laravel
+# Install dependencies Laravel
 RUN composer install --no-dev --optimize-autoloader
 
 # Salin seluruh project
 COPY . .
 
-# Set permission untuk storage dan cache
+# Set permission storage & cache
 RUN chown -R www-data:www-data /var/www/storage /var/www/bootstrap/cache
 
 # Expose port PHP-FPM
